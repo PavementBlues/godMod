@@ -5,24 +5,40 @@ from django.db import models
 # Create your models here.
 
 class Subreddit(models.Model):
-    subUid = models.IntegerField
+    subUid = models.IntegerField(primary_key=True)
     subDatetimeViewed = models.DateTimeField
     subName = models.CharField
     subSubscriberCount = models.IntegerField
     subDatetimeFounded = models.DateTimeField
 
-class SubModerators(model.Model):
-    sumUid = models.IntegerField
-    sumSubUid = models.ForeignKey(Subreddit)
-    sumRdtUid = models.ForeignKey(Redditor)
+    def __str__(self):
+        return self.subName
+
+class Redditor(models.Model):
+    rdtUid = models.IntegerField(primary_key=True)
+    rdtName = models.CharField
+    rdtLinkKarma = models.IntegerField
+    rdtCommentKarma = models.IntegerField
+    rdtDatetimeViewed = models.DateTimeField
+
+    def __str__(self):
+        return self.rdtName
+
+class SubModerators(models.Model):
+    sumUid = models.IntegerField(primary_key=True)
+    sumSubUid = models.ForeignKey(Subreddit, on_delete=models.CASCADE)
+    sumRdtUid = models.ForeignKey(Redditor, on_delete=models.CASCADE)
     sumRanking = models.IntegerField
     sumDateModded = models.DateTimeField
 
-class Post(model.Model):
-    pstUid = models.IntegerField
+    def __str__(self):
+        return self.sumRdtUid
+
+class Post(models.Model):
+    pstUid = models.IntegerField(primary_key=True)
     pstDatetimeViewed = models.DateTimeField
-    pstSubUid = models.ForeignKey(Subreddit)
-    pstRdtUidAuthor = models.ForeignKey(Redditor)
+    pstSubUid = models.ForeignKey(Subreddit, on_delete=models.CASCADE)
+    pstRdtUidAuthor = models.ForeignKey(Redditor, on_delete=models.CASCADE)
     pstDatetimePosted = models.DateTimeField
     pstTitle = models.CharField
     pstBody = models.CharField
@@ -30,44 +46,56 @@ class Post(model.Model):
     pstEditedYN = models.CharField(max_length=1)
     pstGildedCount = models.IntegerField
 
-class Comment(model.Model):
-	cmtUid = models.IntegerField
-	cmtDatetimeViewed = models.DateTimeField
-	cmtSubUid = models.ForeignKey(Subreddit)
-	cmtPstUid = models.ForeignKey(Post)
-	cmtRdtUidAuthor = models.ForeignKey(Redditor)
-	cmtDatetimePosted = models.DateTimeField
-	cmtBody = models.CharField
-	cmtScore = models.IntegerField
-	cmtEditedYN = models.CharField(max_length=1)
-	cmtGildedCount = models.IntegerField
+    def __str__(self):
+        return self.pstBody
 
-class CommentResponses(model.Model):
-	cmrUid = models.IntegerField
-	cmrCmtUidOP = models.ForeignKey(Comment)
-	cmrCmtUidResponder = models.ForeignKey(Comment)
+class Comment(models.Model):
+    cmtUid = models.IntegerField(primary_key=True)
+    cmtDatetimeViewed = models.DateTimeField
+    cmtSubUid = models.ForeignKey(Subreddit, on_delete=models.CASCADE)
+    cmtPstUid = models.ForeignKey(Post, on_delete=models.CASCADE)
+    cmtRdtUidAuthor = models.ForeignKey(Redditor, on_delete=models.CASCADE)
+    cmtDatetimePosted = models.DateTimeField
+    cmtBody = models.CharField
+    cmtScore = models.IntegerField
+    cmtEditedYN = models.CharField(max_length=1)
+    cmtGildedCount = models.IntegerField
 
-class Redditor(model.Model):
-	rdtUid = models.IntegerField
-	rdtName = models.CharField
-	rdtLinkKarma = models.IntegerField
-	rdtCommentKarma = models.IntegerField
-	rdtDatetimeViewed = models.DateTimeField
+    def __str__(self):
+        return self.cmtBody
+
+class CommentResponses(models.Model):
+    cmrUid = models.IntegerField(primary_key=True)
+    cmrCmtUidOP = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="original")
+    cmrCmtUidResponder = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="responding")
+
+    def __str__(self):
+        return self.cmrUid
 
 class User(models.Model):
-    usrUid = models.IntegerField
-    usrRdtUid = models.ForeignKey(Redditor)
+    usrUid = models.IntegerField(primary_key=True)
+    usrRdtUid = models.OneToOneField(Redditor, on_delete=models.CASCADE, verbose_name="reddit account for system user")
+
+    def __str__(self):
+        return self.subName
 
 class Discussion(models.Model):
-	dscUid = models.IntegerField
-	dscUsrUid = models.ForeignKey(User)
-	dscPstUid = models.ForeignKey(Post)
-	dscCmtUid = models.ForeignKey(Comment)
-	dscTopLevelYN = models.CharField(max_length=1)
+    dscUid = models.IntegerField(primary_key=True)
+    dscUsrUid = models.ForeignKey(User, on_delete=models.CASCADE)
+    dscTitle = models.CharField
+    dscBody = models.CharField
+    dscTopLevelYN = models.CharField(max_length=1)
+
+    def __str__(self):
+        return self.dscTitle
 
 class Report(models.Model):
-	rptUid = models.IntegerField
-	rptCmtUid = models.ForeignKey(Comment)
-	rptRdtUidReporter = models.ForeignKey(Redditor)
-	rptRdtUidReportee = models.ForeignKey(Redditor)
-	rptReason = models.CharField
+    rptUid = models.IntegerField(primary_key=True)
+    rptCmtUid = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    rptRdtUidReporter = models.ForeignKey(Redditor, on_delete=models.CASCADE, related_name="reporting")
+    rptRdtUidReportee = models.ForeignKey(Redditor, on_delete=models.CASCADE, related_name="reported")
+    rptReason = models.CharField
+
+    def __str__(self):
+        return self.rptReason
+
