@@ -15,14 +15,11 @@ class Subreddit(models.Model):
         return self.subName
 
 class Redditor(models.Model):
-    rdtUid = models.IntegerField(primary_key=True)
+    rdtUid = models.IntegerField
     rdtName = models.CharField
     rdtLinkKarma = models.IntegerField
     rdtCommentKarma = models.IntegerField
     rdtDatetimeViewed = models.DateTimeField
-
-    def __str__(self):
-        return self.rdtName
 
 class SubModerator(models.Model):
     sumUid = models.IntegerField(primary_key=True)
