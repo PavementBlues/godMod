@@ -3,6 +3,6 @@ from .models import *
 
 # Register your models here.
 
-mainAppModels = [Subreddit, Redditor, SubModerators, Post, Comment,
-	CommentResponses, User, Discussion, Report]
+mainAppModels = [Subreddit, Redditor, SubModerator, Post, Comment,
+	CommentResponse, User, Discussion, Report]
 admin.site.register(mainAppModels)

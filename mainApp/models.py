@@ -24,7 +24,7 @@ class Redditor(models.Model):
     def __str__(self):
         return self.rdtName
 
-class SubModerators(models.Model):
+class SubModerator(models.Model):
     sumUid = models.IntegerField(primary_key=True)
     sumSubUid = models.ForeignKey(Subreddit, on_delete=models.CASCADE)
     sumRdtUid = models.ForeignKey(Redditor, on_delete=models.CASCADE)
@@ -64,7 +64,7 @@ class Comment(models.Model):
     def __str__(self):
         return self.cmtBody
 
-class CommentResponses(models.Model):
+class CommentResponse(models.Model):
     cmrUid = models.IntegerField(primary_key=True)
     cmrCmtUidOP = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="original")
     cmrCmtUidResponder = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="responding")
