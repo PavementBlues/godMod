@@ -4,5 +4,5 @@ from .models import *
 # Register your models here.
 
 mainAppModels = [Subreddit, Redditor, SubModerator, Post, Comment,
-	CommentResponse, User, Discussion, Report]
+	CommentResponse, User, WorkItem, ItemType, ItemStatus, ItemComment, ItemCommentResponse, Report]
 admin.site.register(mainAppModels)
